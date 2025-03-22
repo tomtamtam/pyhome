@@ -1,6 +1,8 @@
 import string
 #import RPi.GPIO as GPIO
 import time
+import paho.mqtt.client as mqtt
+
 
 jalousineNames = ["zimmerTom", "zimmerElla", "schlafZimmer", "badBraun", "wohnZimmerGarten", "WohnZimmerStraße","hauswirtschaftsraum", "kücheGarten", "kücheStraße", "büroGarten", "büroStraße"]
 jalousineDurationTimes = [20, 40, 40, 10, 60, 10, 10, 10, 10, 40, 10]
@@ -87,9 +89,31 @@ def change_jalousine(jalousineName: string, percentage: float):
 
 
 
+def on_message(client, userdata, msg):
+    print(f"Empfangenes Topic: {msg.topic}, Nachricht: {msg.payload.decode()}")
+    msgTopic = msg.topic
+    jalIndex = 40000
+    jalState = int(msg.payload.decode().split(".")[0])
+    if msgTopic[:8]== "Jalousie":
+        jalIndex = msgTopic[-1]
+        print("jalousine: "+jalIndex)
+    #change_jalousine()
+
+client = mqtt.Client()
+client.on_message = on_message
+
+client.connect("192.168.178.144", 1883, 60)
+
+# Alle Topics abonnieren (Wildcard #)
+client.subscribe("#")
+
+client.loop_forever()
 
 
-change_jalousine("zimmerTom",0.00)
+
+
+
+
 
 
 
