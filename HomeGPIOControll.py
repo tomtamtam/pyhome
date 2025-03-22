@@ -92,11 +92,15 @@ def change_jalousine(jalousineName: string, percentage: float):
 def on_message(client, userdata, msg):
     print(f"Empfangenes Topic: {msg.topic}, Nachricht: {msg.payload.decode()}")
     msgTopic = msg.topic
-    jalIndex = 40000
+    jalIndex = 4000
+    jalName = ""
     jalState = int(msg.payload.decode().split(".")[0])
     if msgTopic[:8]== "Jalousie":
         jalIndex = msgTopic[-1]
+        jalName = jalousineNames[jalIndex]
         print("jalousine: "+jalIndex)
+
+        change_jalousine(jalName,jalState/100)
     #change_jalousine()
 
 client = mqtt.Client()
